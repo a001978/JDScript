@@ -6,9 +6,18 @@
 //云服务器腾讯云函数等NOde.js用户在此处填写京东东农场的好友码。
 // 同一个京东账号的好友互助码用@符号隔开,不同京东账号之间用&符号或者换行隔开,下面给一个示例
 // 如: 京东账号1的shareCode1@京东账号1的shareCode2&京东账号2的shareCode1@京东账号2的shareCode2
+
+const su8600 = '935081f797834d79a34f96e330ae0157',
+  ja4412 = '0aa2426dbee6429590df50beb78bad1a',
+  su4894 = 'e680a05e83bd49d8a32247dca935905f',
+  yun2725 = '2a5111a972e3406c97286b33cda5c2fd',
+  chun0799 = 'd70ddade679e4585aea51d1bfb4e93bd'
 let FruitShareCodes = [
-  '0a74407df5df4fa99672a037eec61f7e@dbb21614667246fabcfd9685b6f448f3@6fbd26cc27ac44d6a7fed34092453f77@61ff5c624949454aa88561f2cd721bf6@56db8e7bc5874668ba7d5195230d067a',//账号一的好友shareCode,不同好友中间用@符号隔开
-  '6fbd26cc27ac44d6a7fed34092453f77@61ff5c624949454aa88561f2cd721bf6@9c52670d52ad4e1a812f894563c746ea@8175509d82504e96828afc8b1bbb9cb3',//账号二的好友shareCode，不同好友中间用@符号隔开
+  `${ja4412}@${su4894}@${yun2725}@${chun0799}`,
+  `${su8600}@${su4894}@${yun2725}@${chun0799}`,
+  `${su8600}@${ja4412}@${yun2725}@${chun0799}`,
+  `${su8600}@${ja4412}@${su4894}@${chun0799}`,
+  `${su8600}@${ja4412}@${su4894}@${yun2725}`,
 ]
 
 // 从日志获取互助码
