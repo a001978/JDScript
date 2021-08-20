@@ -1,12 +1,13 @@
 /*
-早起福利
-更新时间：2021-7-8
-30 6 * * * jd_goodMorning.js
+
+30 23 * * * jd_joy_park_help.js
 */
-const $ = new Env("早起福利")
+const $ = Env("汪汪乐园每日助力")
 const ua = `jdltapp;iPhone;3.1.0;${Math.ceil(Math.random()*4+10)}.${Math.ceil(Math.random()*4)};${randomString(40)}`
 let cookiesArr = []
 let cookie = ''
+let inviters = []
+let inviter = {};
 
 !(async () => {
     await requireConfig()
@@ -19,7 +20,6 @@ let cookie = ''
     for (let i = 0; i < cookiesArr.length; i++) {
         if (cookiesArr[i]) {
             cookie = cookiesArr[i];
-            $.cookie = cookie;
             $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1])
             $.index = i + 1;
             $.isLogin = true;
@@ -36,40 +36,85 @@ let cookie = ''
                 }
                 continue
             }
-            await goodMorning()
+            inviter = inviters[0] ?? inviter
+            helpInfo = {}
+            bashInfo = await requestApi("joyBaseInfo",inviter ? {
+                taskId: "167" ,
+                inviteType:  '1',
+                inviterPin: inviter.pin,
+            } :{})
+            if (!bashInfo?.data?.invitePin) continue
+            helpInfo.pin = bashInfo.data.invitePin
+            if (bashInfo?.data?.helpState == 1) {
+                console.log(`账号${i+1}助力账号${inviters[0].index+1}成功`)
+                inviters[0].taskDoTimes++
+                cookie = cookiesArr[inviters[0].index]
+                for(;;){
+                    bonus = await requestApi("apTaskDrawAward",inviter ? {
+                        taskId: "167" ,
+                        taskType:  'SHARE_INVITE',
+                    } :{})
+                    if(bonus.success){
+                        console.log(`账号${inviters[0].index+1}领取${bonus.data[0].awardGivenNumber}工资`)
+                    } else {
+                        break
+                    }
+                }
+                cookie = cookiesArr[i];
+                if (inviters[0].taskDoTimes >= inviters[0].taskLimitTimes) {
+                    inviters.shift();
+                    if (inviters.length == 0) {
+                        break
+                    }
+                }
+            }
+            tasks = await requestApi("apTaskList")
+            if (!tasks?.data)continue
+            tasks.data.forEach(function (task) {
+                if(task.taskType == "SHARE_INVITE"){
+                    if (task.taskDoTimes < task.taskLimitTimes) {
+                        helpInfo.taskLimitTimes = task.taskLimitTimes 
+                        helpInfo.taskDoTimes = task.taskDoTimes
+                        helpInfo.index = i
+                        inviters.push(helpInfo)
+                    }
+                }
+            });
         }
     }
 })()
-function goodMorning() {
-     return new Promise(resolve => {
-         $.get({
-             url: 'https://api.m.jd.com/client.action?functionId=morningGetBean&area=22_1930_50948_52157&body=%7B%22rnVersion%22%3A%224.7%22%2C%22fp%22%3A%22-1%22%2C%22eid%22%3A%22%22%2C%22shshshfp%22%3A%22-1%22%2C%22userAgent%22%3A%22-1%22%2C%22shshshfpa%22%3A%22-1%22%2C%22referUrl%22%3A%22-1%22%2C%22jda%22%3A%22-1%22%7D&build=167724&client=apple&clientVersion=10.0.6&d_brand=apple&d_model=iPhone12%2C8&eid=eidI1aaf8122bas5nupxDQcTRriWjt7Slv2RSJ7qcn6zrB99mPt31yO9nye2dnwJ/OW%2BUUpYt6I0VSTk7xGpxEHp6sM62VYWXroGATSgQLrUZ4QHLjQw&isBackground=N&joycious=60&lang=zh_CN&networkType=wifi&networklibtype=JDNetworkBaseAF&openudid=32280b23f8a48084816d8a6c577c6573c162c174&osVersion=14.4&partner=apple&rfs=0000&scope=01&screen=750%2A1334&sign=0c19e5962cea97520c1ef9a2e67dda60&st=1625354180413&sv=112&uemps=0-0&uts=0f31TVRjBSsqndu4/jgUPz6uymy50MQJSPYvHJMKdY9TUw/AQc1o/DLA/rOTDwEjG4Ar9s7IY4H6IPf3pAz7rkIVtEeW7XkXSOXGvEtHspPvqFlAueK%2B9dfB7ZbI91M9YYXBBk66bejZnH/W/xDy/aPsq2X3k4dUMOkS4j5GHKOGQO3o2U1rhx5O70ZrLaRm7Jy/DxCjm%2BdyfXX8v8rwKw%3D%3D&uuid=hjudwgohxzVu96krv/T6Hg%3D%3D&wifiBssid=c99b216a4acd3bce759e369eaeeafd7',
-             headers: {
-                 'Cookie': cookie,
-                 'Accept': '*/*',
-                 'Connection': 'keep-alive',
-                 'Accept-Encoding': 'gzip, deflate, br',
-                 'User-Agent': ua,
-                 'Accept-Language': 'zh-Hans-CN;q=1',
-                 'Host': 'api.m.jd.com'
-             },
-         }, (err, resp, data) => {
-             try {
-                 data = JSON.parse(data)
-                 if(data.data){
-                      console.log(data.data.bizMsg)
-                 }
-                 if(data.errorMessage){
-                    console.log(data.errorMessage)
-               }
-             } catch (e) {
-                 $.logErr('Error: ', e, resp)
-             } finally {
-                 resolve(data)
-             }
-         })
-     })
- }
+
+function requestApi(functionId, params) {
+    if (!params) {
+        params = {}
+    }
+    params.linkId = "LsQNxL7iWDlXUs6cFl-AAg"
+
+    return new Promise(resolve => {
+        $.post({
+            url: `https://api.m.jd.com/`,
+            headers: {
+                'Host': 'api.m.jd.com',
+                'accept': 'application/json, text/plain, */*',
+                'content-type': 'application/x-www-form-urlencoded',
+                'origin': 'hhttps://joypark.jd.com',
+                'accept-language': 'zh-cn',
+                'User-Agent': ua,
+                'referer': 'https://joypark.jd.com/?activityId=LsQNxL7iWDlXUs6cFl-AAg&lng=110.309497&lat=25.244346&sid=0341d5b9d804d0b838ae6018c19088dw&un_area=20_1726_22885_51456',
+                'cookie': cookie
+            },
+            body: `functionId=${functionId}&body=${JSON.stringify(params)}&_t=${Date.now()}&appid=activities_platform`,
+        }, (err, resp, data) => {
+            try {
+                data = JSON.parse(data)
+            } catch (e) {
+                $.logErr('Error: ', e, resp)
+            } finally {
+                resolve(data)
+            }
+        })
+    })
+}
 
 function requireConfig() {
     return new Promise(resolve => {
