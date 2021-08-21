@@ -37,6 +37,7 @@ var merge = {};
 
 var KEY = '';
 
+const $ = new Env('京东签到');
 const Faker = require('./utils_JDSignValidator')
 const zooFaker = require('./utils_JDJRValidator_Pure')
 let fp = '', eid = ''
