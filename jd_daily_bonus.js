@@ -37,8 +37,8 @@ var merge = {};
 
 var KEY = '';
 
-const Faker = require('./utils/JDSignValidator')
-const zooFaker = require('./utils/JDJRValidator_Pure')
+const Faker = require('./utils_JDSignValidator')
+const zooFaker = require('./utils_JDJRValidator_Pure')
 let fp = '', eid = ''
 
 $nobyda.get = zooFaker.injectToRequest2($nobyda.get.bind($nobyda), 'channelSign')
