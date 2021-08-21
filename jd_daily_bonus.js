@@ -38,8 +38,8 @@ var merge = {};
 var KEY = '';
 
 const $ = new Env('京东签到');
-const Faker = require('./utils_JDSignValidator')
-const zooFaker = require('./utils_JDJRValidator_Pure')
+const Faker = $.isNode() ? require('./utilsJDSignValidator') : ''
+const zooFaker = $.isNode() ? require('./utilsJDJRValidatorPure') : ''
 let fp = '', eid = ''
 
 $nobyda.get = zooFaker.injectToRequest2($nobyda.get.bind($nobyda), 'channelSign')

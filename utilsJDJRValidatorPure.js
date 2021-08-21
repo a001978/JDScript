@@ -9,7 +9,7 @@ const stream = require('stream');
 const zlib = require('zlib');
 const vm = require('vm');
 const PNG = require('png-js');
-const UA = require('./JS_USER_AGENTS.js').USER_AGENT;
+const UA =  $.isNode() ? require('./JS_USER_AGENTS.js').USER_AGENT : '';
 
 
 Math.avg = function average() {
